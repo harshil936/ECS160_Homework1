@@ -11,19 +11,17 @@ const int ARRAY_SIZE = 21000;
 */
 int getIndex(char* line, char* naam ){ 
     const char* tok;
-
-    int num = 1;
-    int actualNum = -2;
-    int counter = 0;
-
+    int num = 1; //this is to keep track of what column we are in right now.
+    int index = 1; // using this variable to store 'num' when the name is appeared.
+    int counter = 0; // This is to keep track of number of appearance of 'name'
     for (tok = strtok(line, ","); tok && *tok; tok = strtok(NULL, ",\n")){
-        if (strcmp(tok, naam) == 0){
-            counter++;
-            if(actualNum == -2){
-                actualNum = num;
+        if (strcmp(tok, name) == 0){ // if the current token is equal to the 'name'.
+            counter++; // increment the counter.
+            if(index == 1){ // if this is the first appearance of the 'name'
+                index = num; // change the value of the index so it never enters this if statement again.
             }
         }
-        num++;
+        num++; // increment the num to keep going further.
     }
 
     if(counter == 1){
@@ -52,12 +50,15 @@ char* getfield(char* line, int num){
     return NULL;
 }
 
+//This is the "object" we will be using to store the names and number of posts associated with each name
 typedef struct query{
         char* tweeter;
         int posts;
     }query;
 
 //Implemented quicksort based on code from this website: https://www.geeksforgeeks.org/quick-sort/
+/*This is a basic swap function that takes two query pointers as parameters 
+and swaps the values at the locations they point to*/
 void swap(query* a, query* b)
 {
     struct query t = *a;
@@ -109,9 +110,13 @@ void quickSort(query arr[], int low, int high)
     }
 }
 
+/*This function prints the contents of the first argument, 
+which is a array of "query" instances, starting from the index specified by the second argument.*/
 void printArray(query arr[], int highInd){
     printf("{");
 
+    /*This conditional checks whether or not index is high enough: 
+    if the array has less than elements, then we need a separate for loop that takes care of this.*/
     if(highInd < 9){
 
         for (int i = highInd; i >= 0; --i)
@@ -121,6 +126,7 @@ void printArray(query arr[], int highInd){
 
     }
 
+    //This is the normal case, which prints the top 10 values.
     else{
 
         for (int i = highInd; i > highInd-10; --i)
@@ -133,6 +139,7 @@ void printArray(query arr[], int highInd){
     printf("}\n");
 }
 
+//This function takes in a String argument and checks whether or not the argument is just spaces or not
 bool containsSpace (char* line){
     for(int i = 0; i < strlen(line)-1; i++){
         if(!isspace(line[i])) {
@@ -144,32 +151,36 @@ bool containsSpace (char* line){
 
 int main(int argc, char*argv[]){
 
+    //This conditional checks whether there is an argument for the command: if there isn't, the program stops.
     if(argv[1] == NULL){
         printf("Invalid Input File");
         return -1;
     }
 
+    //This conditional checks whether or not there is a second argument: if there is, the program terminates.
     if(argv[2] != NULL){
         printf("Invalid Input File\n");
 	return -1;
     }
 
+    //These lines of code deal with input streams and reading in the csv file.
     char* filename = argv[1];
     FILE* stream = fopen(filename, "r+");
 
+    //checks whether or not the file is empty: if it is, the program terminates.
     if(stream == NULL){
         printf("Invalid Input File");
         return -1;
     }
     
-    char line[1024];
-    int columnNo = 0;
-    int row = 0;
+    char line[1024];//Character array that will be used to read in each line of the file
+    int columnNo = 0;//used to get the column number of "name"
+    int row = 0;//keeps track on which row of the file we are on: this was meant for debugging purposes
 
-    bool FirstLoop = 0;
-    int addingInd = 0; 
+    bool FirstLoop = 0;//boolean value that checks whether or not we are reading in the headers of the file
+    int addingInd = 0;//This is the index at which we will be adding each element inside the array of names
 
-    struct query q[ARRAY_SIZE]; 
+    struct query q[ARRAY_SIZE];//This array will contain 'query' instances which will have the information of the tweeters and how many posts they posted
 
     while (fgets(line, 1024, stream)){
 
@@ -178,14 +189,17 @@ int main(int argc, char*argv[]){
         */
         char* tmp = strdup(line);
         
+        //This checks whether the current is empty or not
         if (strcmp(tmp,"\n") == 0 ){
             printf(" There is an empty line in your input file at line number: %d\n", row+1 );
         }
 
+        //This calls the "containsSpace" function, which checks whether the line is just spaces or not
         else if (containsSpace(tmp) == 0 ){
             printf(" There are white spaces in your input file at line number: %d\n", row+1 );
         }
-         
+        
+        //if the line has characters in it
         else {
             /*
             Only to get the index of the column 
@@ -209,11 +223,11 @@ int main(int argc, char*argv[]){
             This for the second row onwards
             */
             else {
-                row++;
+                row++;//increments the row number for each iteration of the while loop
 
-                bool found = 0;
+                bool found = 0;//this checks whether or not the current name was already found or not
 
-                int k = 0;
+                int k = 0;//incrementer for the index of the array "q"
 
                 char* account = getfield(tmp, columnNo);
 		if(account == NULL){
