@@ -229,16 +229,17 @@ int main(int argc, char*argv[]){
 
                 int k = 0;//incrementer for the index of the array "q"
 
-                char* account = getfield(tmp, columnNo);
+                char* account = getfield(tmp, columnNo);//This calls the getfield method, which gets the name from the appropriate column
 		if(account == NULL){
 			printf("Invalid Input File\n");
 			return -1;		
-		}
+		}       
+                //this conditional checks whether or not the account name is empty
                 if(strcmp(account, "\"\"") == 0){
                     account = "\"No Name\"";
                 }
                 
-                //printf("In first loop rn\n");
+                //This while loop searches through the array "q" and checks whether the name has been found yet or not
                 while(k < addingInd){
                     if(strcmp(account, q[k].tweeter) == 0) {
                         q[k].posts++;
@@ -248,17 +249,21 @@ int main(int argc, char*argv[]){
                     k++;
                 }
                 
+                //This conditional checks whether or not the name was found; if it wasn't, add it to the array
                 if(!found){
                     q[addingInd].tweeter = strdup(account);
                     q[addingInd].posts = 1;
                     addingInd++;
                 }
             }
-        } 
+        }
+        //frees the memory space allocated to temp 
         free(tmp);
     }
 
+    //sorts the array
     quickSort(q, 0, addingInd - 1);
 
+    //prints the array contents, specifically the top 10
     printArray(q, addingInd - 1);
 }
