@@ -12,12 +12,12 @@ const int ARRAY_SIZE = 21000;
 int getIndex(char* line, char* naam ){ 
     const char* tok;
     int num = 1; //this is to keep track of what column we are in right now.
-    int index = 1; // using this variable to store 'num' when the name is appeared.
+    int index = -2; // using this variable to store 'num' when the name is appeared.
     int counter = 0; // This is to keep track of number of appearance of 'name'
     for (tok = strtok(line, ","); tok && *tok; tok = strtok(NULL, ",\n")){
-        if (strcmp(tok, name) == 0){ // if the current token is equal to the 'name'.
+        if (strcmp(tok, naam) == 0){ // if the current token is equal to the 'name'.
             counter++; // increment the counter.
-            if(index == 1){ // if this is the first appearance of the 'name'
+            if(index == -2){ // if this is the first appearance of the 'name'
                 index = num; // change the value of the index so it never enters this if statement again.
             }
         }
@@ -25,7 +25,7 @@ int getIndex(char* line, char* naam ){
     }
 
     if(counter == 1){
-        return actualNum;
+        return index;
     }
     else if(counter == 0){
         printf("The column %s is not in the csv file.\n", naam);
